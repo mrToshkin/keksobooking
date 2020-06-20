@@ -1,5 +1,6 @@
 'use strict';
 
+const KEY_ENTER = 13
 const CARDS_COUNT = 8;
 const AVATARS_COUNT = 8;
 const TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
@@ -8,58 +9,119 @@ const PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0
 let palace = 'Дворец', flat = 'квартира', house = 'Дом', bungalo = 'Бунгало';
 let types = [palace, flat, house, bungalo];
 
+let fieldsets = document.querySelectorAll('fieldset');
+let map = document.querySelector('.map');
+let pinsPerent = map.querySelector('.map__pins');
+let pins;
+let pinMain = map.querySelector('.map__pin--main');
+let form = document.querySelector('.ad-form');
+
 let pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 let cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 let cards = [];
 
-let shuffleNums = shuffle(getNums(AVATARS_COUNT));
-for (let i = 0; i < CARDS_COUNT; i++) {
-  cards.push({
-    author: {
-      avatar: `img/avatars/user0${shuffleNums[i] + 1}.png`
-    },
-    offer: {
-      title: TITLES[shuffleNums[i]],
-      address: '',
-      price: `${randomInteger(1000, 1000000)}`,
-      type: types[randomInteger(0, 3)],
-      rooms: randomInteger(1, 5),
-      guests: randomInteger(1, 10),
-      checkin: `1${randomInteger(2, 4)}:00`,
-      checkout: `1${randomInteger(2, 4)}:00`,
-      features: [],
-      description: '',
-      photos: shuffle(PHOTOS) //NOTE перемешивает один раз для всех. У всех одинаковая перемешка =\
-    },
-    location: {
-      x: randomInteger(0, 890),
-      y: randomInteger(130, 630)
+mockCards();
+disableFieldsets();
+setFormAddress();
+pinMain.addEventListener('mouseup', onPinMainMouseup);
+pinMain.addEventListener('keyup', onPinMainKeyup);
+
+function mockCards() {
+  let shuffleNums = shuffle(getNums(AVATARS_COUNT));
+
+  for (let i = 0; i < CARDS_COUNT; i++) {
+    cards.push({
+      author: {
+        avatar: `img/avatars/user0${shuffleNums[i] + 1}.png`
+      },
+      offer: {
+        title: TITLES[shuffleNums[i]],
+        address: '',
+        price: `${randomInteger(1000, 1000000)}`,
+        type: types[randomInteger(0, 3)],
+        rooms: randomInteger(1, 5),
+        guests: randomInteger(1, 10),
+        checkin: `1${randomInteger(2, 4)}:00`,
+        checkout: `1${randomInteger(2, 4)}:00`,
+        features: [],
+        description: '',
+        photos: shuffle(PHOTOS) //NOTE перемешивает один раз для всех. У всех одинаковая перемешка =\
+      },
+      location: {
+        x: randomInteger(0, 890),
+        y: randomInteger(130, 630)
+      }
+    });
+    
+    cards[i].offer.address = cards[i].location.x + ', ' + cards[i].location.y;
+    
+    for(let j = 0,
+      shuffledFeatures = shuffle(FEATURES),
+      randomFeaturesLength = randomInteger(0, FEATURES.length);
+      j < randomFeaturesLength;
+      j++) {
+        cards[i].offer.features.push(shuffledFeatures[j])
     }
-  });
-  
-  cards[i].offer.address = cards[i].location.x + ', ' + cards[i].location.y;
-  
-  for(let j = 0,
-    shuffledFeatures = shuffle(FEATURES),
-    randomFeaturesLength = randomInteger(0, FEATURES.length);
-    j < randomFeaturesLength;
-    j++) {
-      cards[i].offer.features.push(shuffledFeatures[j])
+  }  
+}
+function activateMap() {
+  enableFieldsets();
+  insertPins();
+  pins = map.querySelectorAll('.map__pin');
+  onPinClick();
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  setFormAddress();
+
+  console.log(pins);
+}
+function onPinMainMouseup() {
+  activateMap();
+  pinMain.removeEventListener('mouseup', onPinMainMouseup)
+}
+function onPinMainKeyup(evt) {
+  if (evt.keyCode == KEY_ENTER) {
+    activateMap();
+    pinMain.removeEventListener('keyup', onPinMainKeyup);
+  }
+}
+function onPinClick() {
+  let fragmentCard = document.createDocumentFragment();
+
+  for (let i = 1; i < pins.length; i++) {
+    pins[i].addEventListener('click', function() {
+      removeCard();
+      fragmentCard.appendChild(createCard(cards[i-1]));
+      map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+      map.querySelector('.popup__close').addEventListener('click', removeCard);
+    });
   }
 }
 
-let fragmentPin = document.createDocumentFragment();
-let fragmentCard = document.createDocumentFragment();
-
-for (var i = 0; i < cards.length; i++) {
-  fragmentPin.appendChild(renderPin(cards[i]));
+function setFormAddress() {
+  let formInputAddress = form.querySelector('#address');
+  formInputAddress.value = `${pinMain.offsetLeft}, ${pinMain.offsetTop}`;
 }
-fragmentCard.appendChild(renderCard(cards[0]));
+function disableFieldsets() {
+  for (let i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = true;
+  }
+}
+function enableFieldsets() {
+  for (let i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = false;
+  };
+}
 
-document.querySelector('.map__pins').appendChild(fragmentPin);
-document.querySelector('.map').insertBefore(fragmentCard, document.querySelector('.map__filters-container'));
+function insertPins() {
+  let fragmentPin = document.createDocumentFragment();
 
-function renderPin(cardsArray) {
+  for (let i = 0; i < cards.length; i++) {
+    fragmentPin.appendChild(createPin(cards[i]));
+  }
+  pinsPerent.appendChild(fragmentPin);
+}
+function createPin(cardsArray) {
   let pin = pinTemplate.cloneNode(true);
   
   pin.style.left = cardsArray.location.x + 'px';
@@ -68,7 +130,7 @@ function renderPin(cardsArray) {
   
   return pin;
 }
-function renderCard(cardsArray) {
+function createCard(cardsArray) {
   let card = cardTemplate.cloneNode(true);     
   
   card.querySelector('.popup__title').textContent = cardsArray.offer.title;
@@ -137,8 +199,12 @@ function renderCard(cardsArray) {
     return clone;
   }
   
-  console.log(cardsArray.offer.features);
   return card;
+}
+function removeCard() {
+  let card = map.querySelector('.map__card');
+
+  if (card) card.remove();
 }
 
 function randomInteger(min, max) {
@@ -171,5 +237,4 @@ function getNums(count) {
   return nums;
 }
 
-document.querySelector('.map').classList.remove('map--faded');
 console.log(cards);
