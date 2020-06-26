@@ -27,6 +27,4 @@ function compareInputs(A, B) {
       }
     }
   }
-
-  console.log('castomError: ' + A.validity.customError);
 }
