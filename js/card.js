@@ -42,12 +42,12 @@
       } */
     
       // Решение 2
-      let features = card.querySelector('.popup__features'),
-          photos = card.querySelector('.popup__photos'),
+      let $features = card.querySelector('.popup__features'),
+          $photos = card.querySelector('.popup__photos'),
           fragmentFeatures = document.createDocumentFragment(),
           fragmentPhotos = document.createDocumentFragment(),
-          feature = features.childNodes[1],
-          photo = photos.childNodes[1];
+          feature = $features.childNodes[1],
+          photo = $photos.childNodes[1];
     
       for (let i = 0; i < cardsArray.offer.features.length; i++) {
         fragmentFeatures.appendChild(createElementFeature(cardsArray.offer.features[i], feature));
@@ -56,11 +56,11 @@
         fragmentPhotos.appendChild(createElementPhoto(cardsArray.offer.photos[i], photo));
       }
       
-      while(features.firstChild) features.removeChild(features.firstChild);
-      while(photos.firstChild) photos.removeChild(photos.firstChild);
+      while($features.firstChild) $features.removeChild($features.firstChild);
+      while($photos.firstChild) $photos.removeChild($photos.firstChild);
       
-      features.appendChild(fragmentFeatures);
-      photos.appendChild(fragmentPhotos);
+      $features.appendChild(fragmentFeatures);
+      $photos.appendChild(fragmentPhotos);
       
       function createElementFeature(array, element) {
         let clone = element.cloneNode(true);
@@ -76,8 +76,8 @@
       return card;
     },
     removeCard: function() {
-      let card = document.querySelector('.map__card'); 
-      if (card) card.remove();
+      let $card = document.querySelector('.map__card'); 
+      if ($card) $card.remove();
     }
   }
 })();

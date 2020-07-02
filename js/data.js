@@ -9,10 +9,10 @@
   const TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
   const FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   const PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']
-  let palace = 'Дворец', flat = 'квартира', house = 'Дом', bungalo = 'Бунгало';
+  let palace = 'Дворец', flat = 'Квартира', house = 'Дом', bungalo = 'Бунгало';
   let types = [palace, flat, house, bungalo];
 
-  let mapOverlay = document.querySelector('.map__overlay');
+  let $overlay = document.querySelector('.map__overlay');
   let shuffleNums = shuffle(getNums(AVATARS_AMOUNT));
 
   window.data = [];
@@ -41,7 +41,7 @@
         photos: shuffle(PHOTOS) //NOTE перемешивает один раз для всех. У всех одинаковая перемешка =\
       },
       location: {
-        x: randomInteger(0, mapOverlay.offsetWidth - PIN_WIDTH),
+        x: randomInteger(0, $overlay.offsetWidth - PIN_WIDTH),
         y: randomInteger((130 - PIN_HEIGHT), (630 - PIN_HEIGHT))
       }
     };

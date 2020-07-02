@@ -1,15 +1,23 @@
 'use strict';
 
-let rooms = document.querySelector('#room_number');
-let guests = document.querySelector('#capacity');
+let $form = document.querySelector('.ad-form');
+let $rooms = $form.querySelector('#room_number');
+let $guests = $form.querySelector('#capacity');
 
-guests.addEventListener('input', function(evt) {
-  let target = evt.target;
-  compareInputs(target, rooms); //guests, rooms
+$form.addEventListener('submit', function(evt) {
+  let resetForm = () => $form.reset();
+  window.backend.save(new FormData($form), resetForm)
+  evt.preventDefault();
 });
-rooms.addEventListener('input', function(evt) {
+
+
+$guests.addEventListener('input', function(evt) {
   let target = evt.target;
-  compareInputs(guests, target); //guests, rooms
+  compareInputs(target, $rooms); //guests, rooms
+});
+$rooms.addEventListener('input', function(evt) {
+  let target = evt.target;
+  compareInputs($guests, target); //guests, rooms
 });
 
 function compareInputs(A, B) {
