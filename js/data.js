@@ -1,8 +1,10 @@
 'use strict';
 
 (function(){
-  const PIN_HEIGHT = 70;
-  const PIN_WIDTH = 25;
+  const Pin = {
+    HEIGHT: 70,
+    WIDTH: 25
+  };
 
   const CARDS_AMOUNT = 8;
   const AVATARS_AMOUNT = 8;
@@ -18,7 +20,7 @@
   window.data = [];
   for (let i = 0; i < CARDS_AMOUNT; i++) {
     window.data.push(mockUnit(i))
-    window.data[i].offer.address = (window.data[i].location.x + PIN_WIDTH) + ', ' + (window.data[i].location.y + PIN_HEIGHT);
+    window.data[i].offer.address = (window.data[i].location.x + Pin.WIDTH) + ', ' + (window.data[i].location.y + Pin.HEIGHT);
     window.data[i].offer.features = randomLength(shuffle(FEATURES));
   }
 
@@ -41,8 +43,8 @@
         photos: shuffle(PHOTOS) //NOTE перемешивает один раз для всех. У всех одинаковая перемешка =\
       },
       location: {
-        x: randomInteger(0, $overlay.offsetWidth - PIN_WIDTH),
-        y: randomInteger((130 - PIN_HEIGHT), (630 - PIN_HEIGHT))
+        x: randomInteger(0, $overlay.offsetWidth - Pin.WIDTH),
+        y: randomInteger((130 - Pin.HEIGHT), (630 - Pin.HEIGHT))
       }
     };
 

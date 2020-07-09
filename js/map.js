@@ -1,21 +1,74 @@
 'use strict';
 
 (function() {
-  const ENTER_KEYCODE = 13
-  const PIN_MAIN_HEIGHT = 80;
-  const PIN_MAIN_WIDTH = 64;
+  const ENTER_KEYCODE = 13;
+  const PinMain = {
+    HEIGHT: 80,
+    WIDTH: 64
+  };
 
   let $map = document.querySelector('.map');
-  let $pinsPerent = $map.querySelector('.map__pins');
   let $pinMain = $map.querySelector('.map__pin--main');
   let $form = document.querySelector('.ad-form');
   let $fieldsets = document.querySelectorAll('fieldset');
   let $pins;
-  let data;
+
+  window.map = {
+    data: [],
+    engToRus: {
+      'palace':  'Дворец',
+      'flat':    'Квартира',
+      'house':   'Дом',
+      'bungalo': 'Бунгало'
+    },
+    insertPins: function(pins) {
+      if (pins) {
+        let fragmentPin = document.createDocumentFragment();
+        let pinsAmount = pins.length > 5 ? 5 : pins.length;
+        let $pinsPerent = document.querySelector('.map__pins');
+
+        while ($pinsPerent.children.length > 2) $pinsPerent.removeChild($pinsPerent.lastChild);
+
+        for (let i = 0; i < pinsAmount; i++) {
+          fragmentPin.appendChild(window.pin.createPin(pins[i]));
+        }
+        $pinsPerent.appendChild(fragmentPin);
+      }
+    },
+    onPinClick: function(data) {
+      let fragmentCard = document.createDocumentFragment();
+      $pins = $map.querySelectorAll('.map__pin');
+  
+      for (let i = 1; i < $pins.length; i++) {
+        $pins[i].addEventListener('click', function() {
+          window.card.removeCard();
+          fragmentCard.appendChild(window.card.createCard(data[i-1]));
+          $map.insertBefore(fragmentCard, $map.querySelector('.map__filters-container'));
+          $map.querySelector('.popup__close').addEventListener('click', window.card.removeCard);
+        });
+      }
+    }
+  }
+
+  function onSuccess(response) {
+    window.map.data = response;
+
+    window.map.data.forEach(item => {
+      let temp = window.map.engToRus[item.offer.type];
+      item.offer.type = temp;
+      /* switch (item.offer.type) {
+        case "palace":  item.offer.type = "Дворец";    break;
+        case "flat":    item.offer.type = "Квартира";  break;
+        case "house":   item.offer.type = "Дом";       break;
+        case "bungalo": item.offer.type = "Бунгало";   break;
+      } */
+    });
+    window.map.insertPins(window.map.data);
+    window.map.onPinClick(window.map.data);
+  }
 
   disableFieldsets();
   setFormAddress();
-  window.backend.load(onSuccess);
 
   $pinMain.addEventListener('keyup', onPinMainKeyup);
   $pinMain.addEventListener('mousedown', function(evt) {
@@ -25,8 +78,8 @@
     window.dnd({
       event: evt,
       small: $pinMain,
-      smallOffsetX: (PIN_MAIN_WIDTH / 2),
-      smallOffsetY: PIN_MAIN_HEIGHT,
+      smallOffsetX: (PinMain.WIDTH / 2),
+      smallOffsetY: PinMain.HEIGHT,
       bigOffsetX: $main.offsetLeft,
       limits: {
         top: $overlay.offsetTop + 130,
@@ -39,24 +92,12 @@
     });
   });
 
-  function onSuccess(response) {
-    data = response;
-
-    for (let i = 0; i < data.length; i++) {
-      switch (data[i].offer.type) {
-        case "palace":  data[i].offer.type = "Дворец";    break;
-        case "flat":    data[i].offer.type = "Квартира";  break;
-        case "house":   data[i].offer.type = "Дом";       break;
-        case "bungalo": data[i].offer.type = "Бунгало";   break;
-      }
-    }
-  }
-
   function activateMap() {
     if (!$pins) {
-      insertPins();
-      $pins = $map.querySelectorAll('.map__pin');
-      onPinClick();
+      // вложенные объекты всё равно копируются по ссылке, не клонируются
+      // let cloneData = window.map.data.slice();
+      window.backend.load(onSuccess);
+      console.log('HERE')
     }
     if ($map.classList.contains('map--faded')) {
       setFormAddress();
@@ -65,33 +106,10 @@
       $form.classList.remove('ad-form--disabled');
     }
   }
-
-  function insertPins() {
-    if (data) {
-      let fragmentPin = document.createDocumentFragment();
-    
-      for (let i = 0; i < data.length; i++) {
-        fragmentPin.appendChild(window.pin.createPin(data[i]));
-      }
-      $pinsPerent.appendChild(fragmentPin);
-    }
-  }
   function onPinMainKeyup(evt) {
     if (evt.keyCode == ENTER_KEYCODE) {
       activateMap();
       $pinMain.removeEventListener('keyup', onPinMainKeyup);
-    }
-  } 
-  function onPinClick() {
-    let fragmentCard = document.createDocumentFragment();
-  
-    for (let i = 1; i < $pins.length; i++) {
-      $pins[i].addEventListener('click', function() {
-        window.card.removeCard();
-        fragmentCard.appendChild(window.card.createCard(data[i-1]));
-        $map.insertBefore(fragmentCard, $map.querySelector('.map__filters-container'));
-        $map.querySelector('.popup__close').addEventListener('click', window.card.removeCard);
-      });
     }
   }
 
@@ -109,6 +127,6 @@
   }
   function setFormAddress() {
     let formInputAddress = $form.querySelector('#address');
-    formInputAddress.value = `${$pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)}, ${$pinMain.offsetTop + PIN_MAIN_HEIGHT}`;
+    formInputAddress.value = `${$pinMain.offsetLeft + (PinMain.WIDTH / 2)}, ${$pinMain.offsetTop + PinMain.HEIGHT}`;
   }
 })();
