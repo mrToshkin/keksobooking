@@ -4,7 +4,7 @@
   let cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   
   window.card = {
-    createCard: function(cardsArray) {
+    createCard: cardsArray => {
       let card = cardTemplate.cloneNode(true);     
       
       card.querySelector('.popup__title').textContent = cardsArray.offer.title;
@@ -75,7 +75,7 @@
       
       return card;
     },
-    removeCard: function() {
+    removeCard: () => {
       let $card = document.querySelector('.map__card'); 
       if ($card) $card.remove();
     }

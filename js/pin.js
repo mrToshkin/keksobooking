@@ -4,7 +4,7 @@
   let pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   window.pin = {
-    createPin: function(cardsArray) {
+    createPin: cardsArray => {
       let pin = pinTemplate.cloneNode(true);
       
       pin.style.left = cardsArray.location.x + 'px';

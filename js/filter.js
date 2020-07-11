@@ -8,7 +8,7 @@
   let featuresChosen;
   let filteredData
   
-  $filters.addEventListener('change', function() {
+  $filters.addEventListener('change', () => {
     let features = [ "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner" ];
 
     inputs = Array
@@ -20,14 +20,14 @@
       .map((it) => it.checked)
       .slice(5, 11);
 
-    featuresChosen = features.filter((n, i) => checkboxes[i] === true);
+    featuresChosen = features.filter( (n, i) => checkboxes[i] === true);
     // вложенные объекты всё равно копируются по ссылке, не клонируются
     // let cloneData = window.map.data.slice();
     filteredData = window.map.data.filter(compare);
     updatePins();
   });
   
-  let updatePins = debounce(function() {
+  let updatePins = debounce(() => {
     window.map.insertPins(filteredData);
     window.map.onPinClick(filteredData);
   });

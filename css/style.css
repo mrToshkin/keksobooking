@@ -754,9 +754,9 @@ fieldset {
   width: auto;
 }
 
-.ad-form__upload:last-of-type {
+/* .ad-form__upload:last-of-type {
   margin-right: 0;
-}
+} */
 
 .ad-form__drop-zone {
   width: 100%;
@@ -793,6 +793,8 @@ fieldset {
 
   background-color: #e4e4de;
   border-radius: 5px;
+
+  cursor: move;
 }
 
 .ad-form__element--submit {
@@ -1248,4 +1250,8 @@ fieldset {
 
 .hidden {
   display: none;
+}
+
+.selected {
+  opacity: 0.6;
 }

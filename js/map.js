@@ -21,7 +21,7 @@
       'house':   'Дом',
       'bungalo': 'Бунгало'
     },
-    insertPins: function(pins) {
+    insertPins: pins => {
       if (pins) {
         let fragmentPin = document.createDocumentFragment();
         let pinsAmount = pins.length > 5 ? 5 : pins.length;
@@ -35,12 +35,12 @@
         $pinsPerent.appendChild(fragmentPin);
       }
     },
-    onPinClick: function(data) {
+    onPinClick: data => {
       let fragmentCard = document.createDocumentFragment();
       $pins = $map.querySelectorAll('.map__pin');
   
       for (let i = 1; i < $pins.length; i++) {
-        $pins[i].addEventListener('click', function() {
+        $pins[i].addEventListener('click', () => {
           window.card.removeCard();
           fragmentCard.appendChild(window.card.createCard(data[i-1]));
           $map.insertBefore(fragmentCard, $map.querySelector('.map__filters-container'));
@@ -53,7 +53,7 @@
   function onSuccess(response) {
     window.map.data = response;
 
-    window.map.data.forEach(item => {
+    window.map.data.forEach( item => {
       let temp = window.map.engToRus[item.offer.type];
       item.offer.type = temp;
       /* switch (item.offer.type) {
@@ -71,7 +71,7 @@
   setFormAddress();
 
   $pinMain.addEventListener('keyup', onPinMainKeyup);
-  $pinMain.addEventListener('mousedown', function(evt) {
+  $pinMain.addEventListener('mousedown', evt => {
     let $main = document.querySelector('main');
     let $overlay = document.querySelector('.map__overlay');
 
@@ -97,7 +97,6 @@
       // вложенные объекты всё равно копируются по ссылке, не клонируются
       // let cloneData = window.map.data.slice();
       window.backend.load(onSuccess);
-      console.log('HERE')
     }
     if ($map.classList.contains('map--faded')) {
       setFormAddress();

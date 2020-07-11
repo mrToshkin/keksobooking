@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-  window.dnd = function(f) {
+  window.dnd = (f) => {
     /* f = {
       event: '',
       small: '',
@@ -49,19 +49,12 @@
         y: f.limits.top
       };
 
-      if (evt.pageX > f.limits.right) {
-        newLocation.x = f.limits.right - f.bigOffsetX;
-      } else if (evt.pageX <= f.limits.left) {
-        newLocation.x = f.limits.left - f.bigOffsetX;
-      } else if (evt.pageX > f.limits.left) { 
-        newLocation.x = evt.pageX - f.bigOffsetX;
-      }
+      if (evt.pageX > f.limits.right) newLocation.x = f.limits.right - f.bigOffsetX;
+      if (evt.pageX <= f.limits.left) newLocation.x = f.limits.left - f.bigOffsetX;
+      if (evt.pageX > f.limits.left) newLocation.x = evt.pageX - f.bigOffsetX;
 
-      if (evt.pageY > f.limits.bottom) {
-        newLocation.y = f.limits.bottom;
-      } else if (evt.pageY > f.limits.top) {
-        newLocation.y = evt.pageY;
-      }
+      if (evt.pageY > f.limits.bottom) newLocation.y = f.limits.bottom;
+      if (evt.pageY > f.limits.top) newLocation.y = evt.pageY;
 
       relocate(newLocation);
       f.callbackAllways();

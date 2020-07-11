@@ -3,7 +3,7 @@
 (function () {
   
   window.backend = {
-    load: function(onSuccess) {
+    load: onSuccess => {
       let xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
       let URL = 'https://javascript.pages.academy/keksobooking/data';
@@ -13,7 +13,7 @@
       xhr.open('GET', URL);
       xhr.send();
     },
-    save: function(data, onSuccess) {
+    save: (data, onSuccess) => {
       let xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
       let URL = 'https://javascript.pages.academy/keksobooking';
@@ -26,19 +26,15 @@
   }
   
   function xhrListener(xhr, onSuccess) {
-    xhr.addEventListener('load', function () {
+    xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         onSuccess(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
+    xhr.addEventListener('error', () => onError('Произошла ошибка соединения'));
+    xhr.addEventListener('timeout', () => onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс'));
     
     xhr.timeout = 10000;
   }
